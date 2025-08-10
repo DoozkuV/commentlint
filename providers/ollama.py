@@ -1,3 +1,4 @@
+# License: GPLv3 Copyright: 2025, George Padron <georgenpadron@gmail.com>
 from typing import override
 from ollama import Client 
 
