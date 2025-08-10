@@ -1,9 +1,12 @@
 # License: GPLv3 Copyright: 2025, George Padron <georgenpadron@gmail.com>
-from typing import Callable, Final
+from typing import Callable, Final, cast
 
-from .claude import ClaudeProvider
 from .base import LLMProvider
+from .ollama import OllamaProvider
+from .claude import ClaudeProvider
 from .openai import OpenAIProvider
+
+import ollama
 
 ModelFactory = Callable[[str, str | None], LLMProvider]
 
@@ -34,9 +37,17 @@ claude_models: Final = (
     "claude-3-opus-20240229",
 )
 
+
+# Get available ollama models dynamically at runtime
+try: 
+    ollama_models = cast(list[str], [m.model for m in ollama.list().models])
+except ConnectionError:
+    ollama_models = []
+
 models: dict[str, ModelFactory] = {
     **{model: OpenAIProvider for model in openai_models},
-    **{model: ClaudeProvider for model in claude_models}
+    **{model: ClaudeProvider for model in claude_models},
+    **{model: OllamaProvider for model in ollama_models},
 }
 
 def create_model(model_name: str, api_key: str | None = None) -> LLMProvider:
