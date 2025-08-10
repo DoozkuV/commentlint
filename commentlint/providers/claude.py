@@ -2,7 +2,8 @@
 from typing import override
 from anthropic import Anthropic
 
-from config import MAX_TOKENS
+from commentlint.config import MAX_TOKENS
+
 from .base import LLMProvider
 
 class ClaudeProvider(LLMProvider):

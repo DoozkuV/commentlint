@@ -4,7 +4,8 @@ from dataclasses import dataclass
 import json
 import os
 from typing import Any, cast, override
-from config import PROMPT_TEMPLATE 
+
+from commentlint.config import PROMPT_TEMPLATE
 
 @dataclass
 class Issue:

@@ -5,8 +5,8 @@ import argparse
 import sys
 import os
 from typing import cast 
-from config import DEFAULT_MODEL
-from providers.models import create_model
+from .config import DEFAULT_MODEL
+from .providers.models import create_model
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
