@@ -1,6 +1,6 @@
 import json
 import os
-from typing import cast, override
+from typing import Any, cast, override
 from openai import OpenAI
 from .base import Issue, LLMProvider, PROMPT_TEMPLATE, MissingAPIKeyError
 
@@ -29,10 +29,12 @@ class OpenAIProvider(LLMProvider):
         )
 
         try:
-            return cast(list[Issue], json.loads(response.output_text))
+            data = cast(list[dict[str, Any]], json.loads(response.output_text))
+            return [Issue(**fields, path=path) for fields in data]
         except json.JSONDecodeError:
-            return [{
-                "line": 0,
-                "issue": "LLM returned invalid JSON",
-                "comment": response.output_text
-            }]
+            return [Issue(
+                path=path,
+                line= 0,
+                issue= "LLM returned invalid JSON",
+                comment= response.output_text
+            )]

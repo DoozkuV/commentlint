@@ -1,11 +1,15 @@
-from typing import Callable
+from typing import Callable, Final
+
+from .claude import ClaudeProvider
 from .base import LLMProvider
 from .openai import OpenAIProvider
 
 ModelFactory = Callable[[str], LLMProvider]
 
-openai_models = [
+openai_models: Final = (
     "gpt-5",
+    "gpt-5-mini",
+    "gpt-5-nano",
     "gpt-4o",
     "gpt-4o-mini",
     "gpt-4.1",
@@ -15,9 +19,24 @@ openai_models = [
     "o1",
     "o1-mini",
     "o1-preview",
-]
+)
 
-models: dict[str, ModelFactory] = {model: OpenAIProvider for model in openai_models}
+claude_models: Final = (
+    "claude-opus-4-1-20250805",
+    "claude-opus-4-20250514",
+    "claude-sonnet-4-20250514",
+    "claude-3-7-sonnet-20250219",
+    "claude-3-5-sonnet-20241022",
+    "claude-3-5-haiku-20241022",
+    "claude-3-5-sonnet-20240620",
+    "claude-3-haiku-20240307",
+    "claude-3-opus-20240229",
+)
+
+models: dict[str, ModelFactory] = {
+    **{model: OpenAIProvider for model in openai_models},
+    **{model: ClaudeProvider for model in claude_models}
+}
 
 def create_model(model_name: str) -> LLMProvider:
     if model_name not in models:

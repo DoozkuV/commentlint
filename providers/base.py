@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import TypedDict
+from dataclasses import dataclass
+from typing import TypedDict, override
 
 PROMPT_TEMPLATE = """
 You are a code-comment consistency checker.
@@ -15,10 +16,16 @@ If not, output a mismatch report in JSON array format, where each item is:
 Only output valid JSON. Do not include any extra text.
 """
 
-class Issue(TypedDict):
+@dataclass
+class Issue:
+    path: str
     line: int 
     comment: str
     issue: str
+
+    @override
+    def __str__(self) -> str:
+        return f"{self.path}:{self.line}: error: {self.issue} | Comment: {self.comment}"
 
 class MissingAPIKeyError(RuntimeError):
     pass

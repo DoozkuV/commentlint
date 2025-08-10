@@ -1,31 +1,49 @@
 #!/usr/bin/env python3
+import argparse
 import sys
-import os 
-from providers.base import Issue
+import os
+from typing import cast 
 from providers.models import create_model
 
-MODEL_NAME = "gpt-5"
+DEFAULT_MODEL = "gpt-5-nano"
 
-# This code checks where the file is and does nothing
-def print_issues_for_path(issues: list[Issue], path: str) -> None:
-    for issue in issues:
-        line = issue.get("line", 0)
-        comment = issue.get("comment", "").replace("\n", " ")
-        reason = issue.get("issue", "").replace("\n", " ")
-        print(f"{path}:{line}: error: {reason} | Comment: {comment}")
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="CommentLint - LLM-powered code comment consistency checker"
+    )
+    _ = parser.add_argument(
+        "files",
+        nargs="+",
+        help="One or more source files to check"
+    )
+    _ = parser.add_argument(
+        "--model",
+        help="Model name to use (overrides COMMENTLINT_MODEL env var)"
+    )
+    return parser.parse_args()
 
-def main():
-    """Main logic of the program"""
-    if len(sys.argv) < 2:
-        print("Usage: commentlint.py <file1> [file2 ...]")
+def main() -> None:
+    """The main entrypoint for the project."""
+    args = parse_args()
+
+    model_name = (
+        cast(str, args.model)
+        or os.getenv("COMMENTLINT_MODEL")
+        or DEFAULT_MODEL
+    )
+
+    try: 
+        model = create_model(model_name)
+    except ValueError as e: 
+        print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
-    model = create_model(MODEL_NAME)
-    for file_path in sys.argv[1:]:
+    for file_path in cast(list[str], args.files):
         if os.path.isfile(file_path):
             issues = model.get_responses_for_file(file_path)
-            print_issues_for_path(issues, file_path)
-        else:
+            for issue in issues: 
+                print(issue)
+        else: 
             print(f"{file_path}:0: error: File not found")
 
 

@@ -1,12 +1,12 @@
 import json
 import os
-from typing import cast, override
+from typing import Any, cast, override
 from anthropic import Anthropic
 from .base import Issue, LLMProvider, PROMPT_TEMPLATE, MissingAPIKeyError
 
 MAX_TOKENS = 1024
 
-class AnthropicAIProvider(LLMProvider):
+class ClaudeProvider(LLMProvider):
     client: Anthropic
 
     def __init__(self, model: str, api_key: str | None = None):
@@ -41,10 +41,12 @@ class AnthropicAIProvider(LLMProvider):
 
         response_text = getattr(response.content, "text", "no text input")
         try:
-            return cast(list[Issue], json.loads(response_text))
+            data = cast(list[dict[str, Any]], json.loads(response_text))
+            return [Issue(**fields, path=path) for fields in data]
         except json.JSONDecodeError:
-            return [{
-                "line": 0,
-                "issue": "LLM returned invalid JSON",
-                "comment": response_text
-            }]
+            return [Issue(
+                path=path,
+                line=0,
+                issue="LLM returned invalid JSON",
+                comment=response_text
+            )]
