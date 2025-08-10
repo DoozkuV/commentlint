@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# License: GPLv3 Copyright: 2025, George Padron <georgenpadron@gmail.com>
+
 import argparse
 import sys
 import os
@@ -18,12 +20,15 @@ def parse_args() -> argparse.Namespace:
     )
     _ = parser.add_argument(
         "--model",
-        help="Model name to use (overrides COMMENTLINT_MODEL env var)"
+        help="Model name to use (overrides COMMENTLINT_MODEL env var)",
+    )
+    _ = parser.add_argument(
+        "--api-key",
+        help="API Key for model to use (overrides [MODEL_PROVIDER]_API_KEY env var)",
     )
     return parser.parse_args()
 
 def main() -> None:
-    """The main entrypoint for the project."""
     args = parse_args()
 
     model_name = (
@@ -33,7 +38,7 @@ def main() -> None:
     )
 
     try: 
-        model = create_model(model_name)
+        model = create_model(model_name, args.api_key)
     except ValueError as e: 
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)

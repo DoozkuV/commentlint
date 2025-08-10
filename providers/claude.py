@@ -1,3 +1,4 @@
+# License: GPLv3 Copyright: 2025, George Padron <georgenpadron@gmail.com>
 import json
 import os
 from typing import Any, cast, override
@@ -15,7 +16,7 @@ class ClaudeProvider(LLMProvider):
         if not api_key:
             raise MissingAPIKeyError(
                 "Anthropic API key is not set. " + 
-                "Pass it explicitly or set the OPENAI_API_KEY environment variable."
+                "Pass it explicitly or set the ANTHROPIC_API_KEY environment variable."
             )
         self.client = Anthropic(api_key=api_key)
 

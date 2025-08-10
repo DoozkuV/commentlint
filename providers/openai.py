@@ -1,3 +1,4 @@
+# License: GPLv3 Copyright: 2025, George Padron <georgenpadron@gmail.com>
 import json
 import os
 from typing import Any, cast, override
@@ -28,13 +29,14 @@ class OpenAIProvider(LLMProvider):
             input=code,
         )
 
+        response_text = response.output_text
         try:
-            data = cast(list[dict[str, Any]], json.loads(response.output_text))
+            data = cast(list[dict[str, Any]], json.loads(response_text))
             return [Issue(**fields, path=path) for fields in data]
         except json.JSONDecodeError:
             return [Issue(
                 path=path,
                 line= 0,
                 issue= "LLM returned invalid JSON",
-                comment= response.output_text
+                comment= response_text
             )]

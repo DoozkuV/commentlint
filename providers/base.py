@@ -1,6 +1,7 @@
+# License: GPLv3 Copyright: 2025, George Padron <georgenpadron@gmail.com>
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TypedDict, override
+from typing import override
 
 PROMPT_TEMPLATE = """
 You are a code-comment consistency checker.

@@ -1,10 +1,11 @@
+# License: GPLv3 Copyright: 2025, George Padron <georgenpadron@gmail.com>
 from typing import Callable, Final
 
 from .claude import ClaudeProvider
 from .base import LLMProvider
 from .openai import OpenAIProvider
 
-ModelFactory = Callable[[str], LLMProvider]
+ModelFactory = Callable[[str, str | None], LLMProvider]
 
 openai_models: Final = (
     "gpt-5",
@@ -38,7 +39,7 @@ models: dict[str, ModelFactory] = {
     **{model: ClaudeProvider for model in claude_models}
 }
 
-def create_model(model_name: str) -> LLMProvider:
+def create_model(model_name: str, api_key: str | None = None) -> LLMProvider:
     if model_name not in models:
         raise ValueError(f"Unknown model: {model_name!r}. Available: {list(models)}")
-    return models[model_name](model_name)
+    return models[model_name](model_name, api_key)
